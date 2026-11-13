@@ -1,0 +1,51 @@
+name: gardenos-dev
+
+services:
+  postgres:
+    image: postgres:16.16-alpine3.23@sha256:48340c4811085e083751cab526e533662da19585c1e6942a28b9c48ce7fcb8b2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-garden}
+      POSTGRES_DB: ${POSTGRES_DB:-garden}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your local .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    environment:
+      ENVIRONMENT: development
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in your local .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in your local .env}
+      DATABASE_URL: postgresql+pg8000://${POSTGRES_USER:-garden}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-garden}
+      TRUSTED_HOSTS: localhost,127.0.0.1,[::1],app
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://127.0.0.1:3000}
+      MEDIA_ROOT: /var/lib/gardenos/media
+      BACKUP_ROOT: /var/lib/gardenos/backups
+      WAREHOUSE_DB_PATH: /var/lib/gardenos/warehouse/gardenos.duckdb
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - gardenos-data:/var/lib/gardenos
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend-site
+      args:
+        VITE_GARDENOS_API_BASE_URL: ${VITE_GARDENOS_API_BASE_URL:-http://127.0.0.1:8000/api/v1}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - app
+
+volumes:
+  postgres-data:
+  gardenos-data:

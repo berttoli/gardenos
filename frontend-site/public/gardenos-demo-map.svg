@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640">
+  <title>Synthetic garden layout</title>
+  <desc>A geometric demonstration garden, unrelated to any real location.</desc>
+  <defs>
+    <pattern id="ground" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="#e5ead9"/>
+      <circle cx="6" cy="6" r="1" fill="#cbd5bc"/>
+    </pattern>
+    <pattern id="beds" width="28" height="28" patternUnits="userSpaceOnUse">
+      <rect width="28" height="28" fill="#b8cba3"/>
+      <circle cx="14" cy="14" r="8" fill="#678a57"/>
+    </pattern>
+  </defs>
+  <rect width="960" height="640" fill="url(#ground)"/>
+  <path d="M0 320H960M480 0V640" stroke="#d7cdb8" stroke-width="48"/>
+  <rect x="70" y="70" width="330" height="180" rx="18" fill="url(#beds)" stroke="#7b946a" stroke-width="8"/>
+  <rect x="560" y="70" width="330" height="180" rx="18" fill="#c7d9d2" stroke="#7f9d91" stroke-width="8"/>
+  <path d="M615 78V242M670 78V242M725 78V242M780 78V242M835 78V242" stroke="#f1f6ec" stroke-width="7"/>
+  <rect x="70" y="390" width="330" height="180" rx="18" fill="url(#beds)" stroke="#7b946a" stroke-width="8"/>
+  <rect x="560" y="390" width="200" height="180" rx="18" fill="#bfd0a9" stroke="#7b946a" stroke-width="8"/>
+  <rect x="790" y="390" width="100" height="180" rx="18" fill="#acbdcb"/>
+  <g fill="#527549">
+    <circle cx="600" cy="435" r="19"/><circle cx="650" cy="435" r="19"/><circle cx="710" cy="435" r="19"/>
+    <circle cx="600" cy="500" r="19"/><circle cx="650" cy="500" r="19"/><circle cx="710" cy="500" r="19"/>
+  </g>
+  <rect x="365" y="590" width="230" height="30" rx="15" fill="#f8faf3"/>
+  <text x="480" y="610" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#486241">DEMONSTRATION LAYOUT</text>
+</svg>

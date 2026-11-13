@@ -1,0 +1,69 @@
+name: GardenOS checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install uv==0.13.5
+      - run: uv sync --locked --extra dev
+      - run: python scripts/check_public_tree.py
+      - run: uv run --no-sync ruff check app tests scripts migrations assistant-service
+      - run: uv run --no-sync pytest -q tests assistant-service/tests
+
+  browser-persistence:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.16-alpine3.23@sha256:48340c4811085e083751cab526e533662da19585c1e6942a28b9c48ce7fcb8b2
+        env:
+          POSTGRES_USER: fixture
+          POSTGRES_PASSWORD: fixture-ci-password
+          POSTGRES_DB: gardenos_e2e_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fixture -d gardenos_e2e_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      # Synthetic credentials for the disposable CI service. No repository secrets.
+      GARDENOS_E2E_DATABASE_URL: postgresql+pg8000://fixture:fixture-ci-password@127.0.0.1:5432/gardenos_e2e_test
+      VITE_GARDENOS_API_BASE_URL: http://127.0.0.1:8138/api/v1
+      GARDENOS_E2E_PYTHON: .venv/bin/python
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend-site/package-lock.json
+      - run: python -m pip install uv==0.13.5
+      - run: uv sync --locked --extra dev
+      - run: npm ci
+        working-directory: frontend-site
+      - run: npm run lint && npm run typecheck && npm test
+        working-directory: frontend-site
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend-site
+      - run: npm run test:e2e
+        working-directory: frontend-site
