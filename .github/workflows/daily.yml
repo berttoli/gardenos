@@ -1,0 +1,15 @@
+name: Daily stability
+
+on:
+  schedule:
+    - cron: '23 5 * * *'
+      timezone: America/Los_Angeles
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Full CI
+    uses: ./.github/workflows/test.yml
