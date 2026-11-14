@@ -13,7 +13,7 @@ authors = [{ name = "Garden OS" }]
 dependencies = [
   "alembic>=1.14,<2",
   "fastapi>=0.115,<1",
-  "duckdb>=1.0,<2",
+  "duckdb>=1.0,<3",
   "jinja2>=3.1,<4",
   "itsdangerous>=2.2,<3",
   "passlib>=1.7.4,<2",
