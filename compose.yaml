@@ -2,7 +2,7 @@ name: gardenos-dev
 
 services:
   postgres:
-    image: postgres:16.16-alpine3.23@sha256:48340c4811085e083751cab526e533662da19585c1e6942a28b9c48ce7fcb8b2
+    image: postgres:19.0-alpine3.23@sha256:40ad7e457013448b5522c6c5d30dccb8248959c41adc0e56c1785be4293bbd67
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-garden}
       POSTGRES_DB: ${POSTGRES_DB:-garden}
